@@ -10,42 +10,34 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingUtilities;	
 
 import saver.GuiWindow.Params;
 
 public class SpotlightSaver {
 	
-	private static SpotlightSaver save;
 //	static String src = "C:\\Users\\samwl\\AppData\\Local\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
 //	static String src = "";
 //	static String dest = "C:\\Users\\samwl\\Documents\\SpotlightPics";
 	private static String sourceFolder = "";
 	private static String destinationFolder = "";
 	
-	private SpotlightSaver() {
+	/**
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
+    public static void main(String[] args) throws Exception {
+		Params params = launchWindow(sourceFolder, destinationFolder);
+		
+		List<File> files = parseParams(params);
+		copyFolder(files.get(0), files.get(1));
+        deleteSmallShit(files.get(1));
+        changeExt(files.get(1));   
+        System.exit(0);
 	}
-	
-    public static void main(String[] args) {
-    	try {
-	    	Params params = null;
-	    	params = launchWindow(sourceFolder, destinationFolder);
-	    	
-	    	save = new SpotlightSaver();
-	    	List<File> files = parseParams(params);
-
-	        copyFolder(files.get(0), files.get(1));
-	        deleteSmallShit(files.get(1));
-	        changeExt(files.get(1));   
-	        
-    	} catch (Throwable t) {
-    		System.out.println("Terminated unexpectedly");
-    		t.printStackTrace(System.out);
-    	}
-    }
     
     private static List<File> parseParams(Params params) {
-    	
     	java.util.List<java.io.File> files = new ArrayList<>();
     	if(params.sourcePath != null) {
     		File sourceFolder = new File(params.sourcePath);
@@ -123,7 +115,7 @@ public class SpotlightSaver {
     	SwingUtilities.invokeAndWait(new Runnable() {
     		@Override
     		public void run() {
-    			window.showGui(src);
+    			window.showGui(src, dest);
     		}
     	});
     	return window.getParams();

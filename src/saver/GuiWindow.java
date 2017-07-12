@@ -6,6 +6,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -21,6 +23,10 @@ public class GuiWindow {
 		public final String sourcePath;
 		public final String destinationPath;
 		
+		/**
+		 * @param sourcePath
+		 * @param destinationPath
+		 */
 		public Params(String sourcePath, String destinationPath) {
 			this.sourcePath = sourcePath;
 			this.destinationPath = destinationPath;
@@ -55,6 +61,8 @@ public class GuiWindow {
 	private final int col0 = 10;
 	private final int col1 = 140;
 	private final int col2 = 450;
+	private final String src = "C:\\Users\\samwl\\AppData\\Local\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
+	private final String dest = "C:\\\\Users\\\\samwl\\\\Documents\\\\SpotlightPics";
 	
 	private CloseableJDialog dialog;
 	private JButton sourceBrowse;
@@ -68,8 +76,9 @@ public class GuiWindow {
 	private JFileChooser choseFolder = new JFileChooser();
 	
 	
-	public void showGui(String sourePath) {
+	public void showGui(String sourePath, String destinationPath) {
 		dialog = new CloseableJDialog();
+		dialog.setModal(true);
 		dialog.setBounds(100, 100, windowWidth, windowHeight);
 		dialog.setLocationRelativeTo(null);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -79,15 +88,34 @@ public class GuiWindow {
 		dialog.setTitle("Spotlight Saver");
 		Font textFont = new Font("SansSerif", Font.PLAIN, 14);
 		
+		//Document listener
+		DocumentListener docListen = new DocumentListener() {
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+				validateSettings();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				validateSettings();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				validateSettings();
+			}
+		};
+		
 		//Source
 		sourceFolderLabel = new JLabel("Source Folder:");
 		sourceFolderLabel.setBounds(col0, row0, fieldWidth, fieldHeight);
 		sourceFolderLabel.setFont(textFont);
 		contentPane.add(sourceFolderLabel);
 		
-		sourceFolderField = new JTextField();
+		sourceFolderField = new JTextField(src);
 		sourceFolderField.setBounds(col1, row0, fieldWidth, fieldHeight);
 		sourceFolderField.setFont(textFont);
+		sourceFolderField.getDocument().addDocumentListener(docListen);
 		contentPane.add(sourceFolderField);
 		
 		sourceBrowse = new JButton("Browse");
@@ -101,9 +129,10 @@ public class GuiWindow {
 		destinationFolderLabel.setFont(textFont);
 		contentPane.add(destinationFolderLabel);
 		
-		destinationFolderField = new JTextField();
+		destinationFolderField = new JTextField(dest);
 		destinationFolderField.setBounds(col1, row1, fieldWidth, fieldHeight);
 		destinationFolderField.setFont(textFont);
+		destinationFolderField.getDocument().addDocumentListener(docListen);
 		contentPane.add(destinationFolderField);
 		
 		destinationBrowse = new JButton("Browse");
@@ -142,6 +171,13 @@ public class GuiWindow {
 		contentPane.setBackground(Color.LIGHT_GRAY);
 		contentPane.setFont(textFont);
 		dialog.setVisible(true);
+	}
+	
+	
+	private void validateSettings() {
+		boolean enabled = sourceFolderField.getText().isEmpty() || destinationFolderField.getText().isEmpty();
+		runButton.setEnabled(enabled);
+		runButton.setToolTipText(enabled ? "" : "Error somewhere...");
 	}
 	
 	private void addButtonListener(JButton button, final JTextField field, final String description) {
