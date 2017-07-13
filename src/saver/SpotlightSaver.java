@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;	
 
@@ -16,9 +14,6 @@ import saver.GuiWindow.Params;
 
 public class SpotlightSaver {
 	
-//	static String src = "C:\\Users\\samwl\\AppData\\Local\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
-//	static String src = "";
-//	static String dest = "C:\\Users\\samwl\\Documents\\SpotlightPics";
 	private static String sourceFolder = "";
 	private static String destinationFolder = "";
 	
@@ -32,8 +27,8 @@ public class SpotlightSaver {
 		
 		List<File> files = parseParams(params);
 		copyFolder(files.get(0), files.get(1));
-        deleteSmallShit(files.get(1));
-        changeExt(files.get(1));   
+        deleteSmallPics(files.get(1));
+        changeExt(files.get(1));
         System.exit(0);
 	}
     
@@ -90,24 +85,23 @@ public class SpotlightSaver {
         }
     }
     
+    public static void deleteSmallPics(File destinationFolder) throws IOException {
+    	File[] list = destinationFolder.listFiles();
+    	for(int i=0; i < list.length; i++) {
+    		if(list[i].length() < 200000) {
+    			list[i].delete();
+    		}
+    	}
+    }
+    
     public static void changeExt(File destinationFolder) {
     	File[] list = destinationFolder.listFiles();
-    	
     	for(int i=0; i < list.length; i++) {
-    		File f = new File("C:\\Users\\samwl\\Documents\\SpotlightPics\\"+list[i].getName());
+    		File f = new File(list[i].getAbsolutePath());
     		String newName = destinationFolder.toString()+"\\"+"pic_"+i+".png";
     		f.renameTo(new File(newName));
     	}
     	System.out.println("All files converted");
-    }
-    
-    public static void deleteSmallShit(File destinationFolder) throws IOException {
-    	File[] list = destinationFolder.listFiles();
-    	for(File f : list) {
-    		if(f.length() < 200000) {
-    			f.delete();
-    		} 
-    	}
     }
     
     private static Params launchWindow(final String src, final String dest) throws InvocationTargetException, InterruptedException {

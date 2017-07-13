@@ -61,8 +61,10 @@ public class GuiWindow {
 	private final int col0 = 10;
 	private final int col1 = 140;
 	private final int col2 = 450;
-	private final String src = "C:\\Users\\samwl\\AppData\\Local\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
-	private final String dest = "C:\\\\Users\\\\samwl\\\\Documents\\\\SpotlightPics";
+	private final String homePath = System.getProperty("user.home");
+	private final String src = homePath + "\\AppData\\Local\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets";
+	private final String dest = homePath+ "\\Pictures\\SpotlightPictures";
+	
 	
 	private CloseableJDialog dialog;
 	private JButton sourceBrowse;
