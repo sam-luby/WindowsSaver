@@ -1,5 +1,6 @@
 package saver;
 
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,9 @@ public class SpotlightSaver {
         changeExt(files.get(1));
         deleteShite(files.get(1));
         deletePortraits(files.get(1));
+        rename(files.get(1));
         
+        Desktop.getDesktop().open(files.get(1));
         System.exit(0);
 	}
     
@@ -78,7 +81,7 @@ public class SpotlightSaver {
         }
     }
     
-    public static void deleteSmallPics(File destinationFolder) throws IOException {
+    private static void deleteSmallPics(File destinationFolder) throws IOException {
     	File[] list = destinationFolder.listFiles();
     	for(int i=0; i < list.length; i++) {
     		if(list[i].length() < 200000) {
@@ -87,14 +90,13 @@ public class SpotlightSaver {
     	}
     }
     
-    public static void changeExt(File destinationFolder) throws IOException {
+    private static void changeExt(File destinationFolder) throws IOException {
     	File[] list = destinationFolder.listFiles();
     	for(int i=0; i < list.length; i++) {
     		File f = new File(list[i].getAbsolutePath());
     		String newName = destinationFolder.toString()+"\\"+"pic_"+i+".png";
     		f.renameTo(new File(newName));
     	}
-    	JOptionPane.showMessageDialog(null, "All files converted");
     }
     
     private static void deleteDuplicates(File destinationFolder) {
@@ -107,7 +109,6 @@ public class SpotlightSaver {
     			}
     		}
     	}
-    	
     }
     
     private static void deleteShite(File destinationFolder) throws IOException {
@@ -127,6 +128,14 @@ public class SpotlightSaver {
     		if(im.getHeight() != 1080) {
     			f.delete();
     		}
+    	}
+    }
+    
+    private static void rename(File destinationFolder) {
+    	File[] list = destinationFolder.listFiles();
+    	for(int i=0; i < list.length; i++) {
+    		String newName = destinationFolder.toString()+"\\"+"Wallpaper_"+i+".png";
+    		list[i].renameTo(new File(newName));
     	}
     }
     
