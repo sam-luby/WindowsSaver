@@ -1,12 +1,21 @@
 package saver;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;	
 
@@ -18,7 +27,7 @@ public class SpotlightSaver {
 	private static String destinationFolder = "";
 	
 	/**
-	 * 
+	 * Does all the stuff
 	 * @param args
 	 * @throws Exception
 	 */
@@ -28,7 +37,10 @@ public class SpotlightSaver {
 		List<File> files = parseParams(params);
 		copyFolder(files.get(0), files.get(1));
         deleteSmallPics(files.get(1));
+        deleteDuplicates(files.get(1));
         changeExt(files.get(1));
+        deleteShite(files.get(1));
+        
         System.exit(0);
 	}
     
@@ -54,33 +66,21 @@ public class SpotlightSaver {
     /**
      * This function recursively copy all the sub folder and files from sourceFolder to destinationFolder
      * */
-    private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException
-    {
-        //Check if sourceFolder is a directory or file
-        //If sourceFolder is file; then copy the file directly to new location
-        if (sourceFolder.isDirectory()) 
-        {
-            //Verify if destinationFolder is already present; If not then create it
-            if (!destinationFolder.exists()) 
-            {
+    private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException {
+        if (sourceFolder.isDirectory()) {
+            if (!destinationFolder.exists()) {
                 destinationFolder.mkdir();
                 System.out.println("Directory created : " + destinationFolder);
             }
              
-            //Get all files from source directory
             String files[] = sourceFolder.list();
-
-            //Iterate over all files and copy them to destinationFolder one by one
-            for (String file : files) 
-            {
+            for (String file : files) {
                 File srcFile = new File(sourceFolder, file);
                 File destFile = new File(destinationFolder, file);
                 copyFolder(srcFile, destFile);
             }
         }
-        else
-        {
-            //Copy the file content from one place to another 
+        else {
             Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
@@ -94,14 +94,37 @@ public class SpotlightSaver {
     	}
     }
     
-    public static void changeExt(File destinationFolder) {
+    public static void changeExt(File destinationFolder) throws IOException {
     	File[] list = destinationFolder.listFiles();
     	for(int i=0; i < list.length; i++) {
     		File f = new File(list[i].getAbsolutePath());
     		String newName = destinationFolder.toString()+"\\"+"pic_"+i+".png";
     		f.renameTo(new File(newName));
     	}
-    	System.out.println("All files converted");
+    	JOptionPane.showMessageDialog(null, "All files converted");
+    }
+    
+    private static void deleteDuplicates(File destinationFolder) {
+    	File[] list = destinationFolder.listFiles();
+    	
+    	for(int i=0; i < list.length ; i++) {
+    		for(int j=i+1; j < list.length; j++) {
+    			if(list[i].length() == list[j].length()) {
+    				list[j].delete();
+    			}
+    		}
+    	}
+    	
+    }
+    
+    private static void deleteShite(File destinationFolder) throws IOException {
+    	File[] list = destinationFolder.listFiles();
+    	for(int i=0; i < list.length; i++) {
+    		BufferedImage im = ImageIO.read(list[i]);
+    		if(im.getColorModel().getPixelSize() != 24) {
+    			list[i].delete();
+    		}
+    	}
     }
     
     private static Params launchWindow(final String src, final String dest) throws InvocationTargetException, InterruptedException {
