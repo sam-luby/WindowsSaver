@@ -4,21 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;	
-
 import saver.GuiWindow.Params;
 
 public class SpotlightSaver {
@@ -40,6 +32,7 @@ public class SpotlightSaver {
         deleteDuplicates(files.get(1));
         changeExt(files.get(1));
         deleteShite(files.get(1));
+        deletePortraits(files.get(1));
         
         System.exit(0);
 	}
@@ -123,6 +116,16 @@ public class SpotlightSaver {
     		BufferedImage im = ImageIO.read(list[i]);
     		if(im.getColorModel().getPixelSize() != 24) {
     			list[i].delete();
+    		}
+    	}
+    }
+    
+    private static void deletePortraits(File destinationFolder) throws IOException {
+    	File[] list = destinationFolder.listFiles();
+    	for(File f : list) {
+    		BufferedImage im = ImageIO.read(f);
+    		if(im.getHeight() != 1080) {
+    			f.delete();
     		}
     	}
     }
